@@ -1,4 +1,4 @@
-import React, { useContext} from "react";
+import React, { useContext } from "react";
 import {
   CartContainer,
   CartDetails,
@@ -14,31 +14,26 @@ import {
   EmptyCartWrap,
   CartIcon,
 } from "../../styles/Cart";
-import { faTimes, faCartShopping } from "@fortawesome/free-solid-svg-icons";
+import { faTimes, faCartShopping, faTrash } from "@fortawesome/free-solid-svg-icons";
 import { AppContext } from "../../ContextApi/AppContext";
 
 const Cart = () => {
-  const { cart, setCart } = useContext(AppContext);
+  const { state, dispatch } = useContext(AppContext);
+
   const baseURL = "http://localhost:1337";
 
-  const increaseQuantity = (index) => {
-
-    setCart(
-      cart.map((prod, i) =>
-        i === index ? { ...prod, Quantity: prod.Quantity + 1 } : prod
-      )
-    );
+  const increaseQuantity = (Name) => {
+    dispatch({
+      type: "Increment_Quantity",
+      payload: { Name },
+    });
   };
 
-  const decreaseQuantity = (index) => {
-    
-    setCart(
-      cart
-        .map((prod, i) =>
-          i === index ? { ...prod, Quantity: prod.Quantity - 1 } : prod
-        )
-        .filter((prod) => prod.Quantity > 0)
-    );
+  const decreaseQuantity = (Name) => {
+    dispatch({
+      type: "Decrement_Quantity",
+      payload: { Name },
+    });
   };
 
   const formatPrice = (price) => {
@@ -52,6 +47,10 @@ const Cart = () => {
     prodCart.classList.remove("openCart");
   };
 
+  const removeProd = (Name) => {
+    dispatch({ type: "DEL_PROD", payload: { Name } });
+  };
+
   return (
     <div className="show-cart">
       <CartScrollWrap>
@@ -59,28 +58,30 @@ const Cart = () => {
           <h3>ORDER</h3>
           <CrossIcon icon={faTimes} onClick={closeCart} />
         </CartHeader>
-        {cart.length > 0 ? (
-          cart.map((prods, index) => {
-            return (
-              <CartDetails key={index}>
-                <CartDetailsLeft>
-                  <CartImage src={`${baseURL}${prods.ProdImg}`} />
-                  <QuantityButton onClick={() => decreaseQuantity(index)}>
-                    -
-                  </QuantityButton>
-                  <Quantity>{prods.Quantity}</Quantity>
-                  <QuantityButton onClick={() => increaseQuantity(index)}>
-                    +
-                  </QuantityButton>
-                </CartDetailsLeft>
-                <CartDetailsRight>
-                  <CartPrice>{`$${
-                    prods.Quantity * formatPrice(prods.Price).toFixed(2)
-                  }`}</CartPrice>
-                </CartDetailsRight>
-              </CartDetails>
-            );
-          })
+        {state.cart.length > 0 ? (
+          state.cart.map((prods, index) => (
+            <CartDetails key={index}>
+              <CartDetailsLeft>
+                <CartImage src={`${baseURL}${prods.ProdImg}`} />
+                <QuantityButton onClick={() => decreaseQuantity(prods.Name)}>
+                  -
+                </QuantityButton>
+                <Quantity>{prods.Quantity}</Quantity>
+                <QuantityButton onClick={() => increaseQuantity(prods.Name)}>
+                  +
+                </QuantityButton>
+              </CartDetailsLeft>
+              <CartDetailsRight>
+                <CartPrice>{`$${
+                  prods.Quantity * formatPrice(prods.Price)
+                }`}</CartPrice>
+                  <CrossIcon
+                    onClick={() => removeProd(prods.Name)}
+                    icon={faTrash}
+                  />
+              </CartDetailsRight>
+            </CartDetails>
+          ))
         ) : (
           <EmptyCartWrap>
             <CartIcon icon={faCartShopping} />

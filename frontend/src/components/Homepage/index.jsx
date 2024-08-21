@@ -71,8 +71,8 @@ const Homepage = () => {
       <Nav logo = {logo} navLinks = {navLinks}  />
       <Hero banner = {banner} />
       <TopProducts topProducts = {topProducts} firstOrder = {firstOrder} />
-      <ExploreMore explore = {explore}  />
-      <AboutUs aboutUs = {aboutUs} featured = {featured} />
+      { <ExploreMore explore = {explore}  />}
+      { <AboutUs aboutUs = {aboutUs} featured = {featured} /> }
       <Footer />
       <Cart/>
     </HomeContainer>

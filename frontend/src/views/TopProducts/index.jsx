@@ -1,4 +1,5 @@
 import React, { useState, useContext, useEffect } from "react";
+
 import {
   ProductWrapper,
   ProductCatalog,
@@ -14,10 +15,14 @@ import {
   ProductButton,
 } from "../../styles/TopProducts";
 import { AppContext } from "../../ContextApi/AppContext";
+import { useNavigate } from "react-router-dom";
 
 const TopProducts = ({ topProducts, firstOrder }) => {
   const baseURL = "http://localhost:1337";
-  const { cart, setCart } = useContext(AppContext);
+  const { state, dispatch } = useContext(AppContext);
+  useEffect(() => {
+    localStorage.setItem("cart", JSON.stringify(state.cart));
+  }, [state.cart]);
 
   const addToCart = (id) => {
     const prodCart = document.querySelector(".show-cart");
@@ -27,25 +32,38 @@ const TopProducts = ({ topProducts, firstOrder }) => {
     const ProdImg =
       topProducts[id]["attributes"]["ProdImg"]["data"][0]["attributes"]["url"];
 
-    const isProductExists = cart.find((prod) => prod.Name === Name);
+    const isProductExists = state.cart.find((prod) => prod.Name === Name);
 
     if (!isProductExists) {
-      setCart([...cart, { Name, Price, ProdImg, Quantity: 1 }]);
+      dispatch({
+        type: "ADD_PRODUCT_TO_CART",
+        payload: { Name, Price, ProdImg, Quantity: 1 },
+      });
     } else {
-      setCart(
-        cart.map((prod) =>
-          prod.Name === Name ? { ...prod, Quantity: prod.Quantity + 1 } : prod
-        )
-      );
+      dispatch({
+        type: "Increment_Quantity",
+        payload: { Name },
+      });
     }
   };
 
+  const navigate = useNavigate();
+
+  const handleState = (id) => {
+    navigate(`/DescPage/${id}`);
+  };
+
   return (
-    <ProductWrapper id="top-products" >
+    <ProductWrapper id="top-products">
       <ProductHeadline>Top Products</ProductHeadline>
       <ProductCatalog>
         {topProducts.map((product, index) => (
-          <ProductCard key={product["attributes"].id}>
+          <ProductCard
+            onClick={() => {
+              handleState(product.id);
+            }}
+            key={product.id}
+          >
             <ProductImageWrapper>
               <ProductImage
                 src={`${baseURL}${product["attributes"].ProdImg["data"][0]["attributes"]["url"]}`}
@@ -54,7 +72,12 @@ const TopProducts = ({ topProducts, firstOrder }) => {
               <ProductImageDetails>
                 <ProductPrice>{product["attributes"].Price}</ProductPrice>
                 <ProductTitle>{product["attributes"].Name}</ProductTitle>
-                <AddToCartButton onClick={() => addToCart(index)}>
+                <AddToCartButton
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    addToCart(index);
+                  }}
+                >
                   {product["attributes"].Button}
                 </AddToCartButton>
               </ProductImageDetails>

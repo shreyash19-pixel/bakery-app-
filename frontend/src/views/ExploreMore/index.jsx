@@ -1,5 +1,4 @@
-import React, { useContext, useState } from "react";
-
+import React, { useContext, useState, useEffect } from "react";
 import {
   ExploreWrapper,
   ExportLink,
@@ -16,12 +15,12 @@ import {
 
 import Loader from "../../components/Loader";
 import { AppContext } from "../../ContextApi/AppContext";
-import { Quantity } from "../../styles/Cart";
+import { useNavigate } from "react-router-dom";
 
 const ExploreMore = ({ explore }) => {
   const [activeCat, setActiveCat] = useState([explore["Categories"][0]]);
   const [loading, setLoading] = useState(false);
-  const { cart, setCart } = useContext(AppContext);
+  const { state, dispatch } = useContext(AppContext);
 
   const setCategory = (cat) => {
     setLoading(true);
@@ -31,10 +30,13 @@ const ExploreMore = ({ explore }) => {
     }, 500);
   };
 
+  useEffect(() => {
+    localStorage.setItem("cart", JSON.stringify(state.cart));
+  }, [state.cart]);
+
   const baseURL = "http://localhost:1337";
 
   const addToCart = (i, j) => {
-    
     const prodCart = document.querySelector(".show-cart");
     prodCart.classList.add("openCart");
     const { Name, Price } =
@@ -45,17 +47,26 @@ const ExploreMore = ({ explore }) => {
         "data"
       ][0]["attributes"]["url"];
 
-    const isProductExists = cart.find((prod) => prod.Name === Name);
+    const isProductExists = state.cart.find((prod) => prod.Name === Name);
 
     if (!isProductExists) {
-      setCart([...cart, { Name, Price, ProdImg, Quantity: 1 }]);
+      dispatch({
+        type: "ADD_PRODUCT_TO_CART",
+        payload: { Name, Price, ProdImg, Quantity: 1 },
+      });
     } else {
-      setCart(
-        cart.map((prod) =>
-          prod.Name === Name ? { ...prod, Quantity: prod.Quantity + 1 } : prod
-        )
-      );
+      dispatch({
+        type: "Increment_Quantity",
+        payload: { Name },
+      });
     }
+  };
+
+  const navigate = useNavigate();
+
+  const handleState = (id) => {
+     console.log(`Navigating to product with id: ${id}`);
+    navigate(`/DescPage/${id}`);
   };
 
   return (
@@ -73,7 +84,12 @@ const ExploreMore = ({ explore }) => {
       ) : (
         <ProductCatalog>
           {activeCat.map((product) => (
-            <ProductCard key={product.id}>
+            <ProductCard
+              onClick={() => {
+                handleState(product.id);
+              }}
+              key={product.id}
+            >
               {product.products.data.map((prod, j) => (
                 <ProductImageWrapper key={prod.id}>
                   <ProductImage
@@ -83,7 +99,12 @@ const ExploreMore = ({ explore }) => {
                   <ProductImageDetails>
                     <ProductPrice>{prod.attributes.Price}</ProductPrice>
                     <ProductTitle>{prod.attributes.Name}</ProductTitle>
-                    <AddToCartButton onClick={() => addToCart((product.id)-1, j)}>
+                    <AddToCartButton
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        addToCart(product.id - 1, j);
+                      }}
+                    >
                       {prod.attributes.Button}
                     </AddToCartButton>
                   </ProductImageDetails>
