@@ -4,34 +4,22 @@ import Register from '../../components/Register';
 import Login from '../../components/Login';
 import Homepage from '../../components/Homepage';
 import NotFound from '../../components/NotFound';
-import { AppContext } from '../../ContextApi/AppContext';
+import { CartProvider } from '../../ContextApi/AppContext';
 import DescPages from '../../views/DescPages';
 
 const Home = () => {
-    const [cart, setCart] = useState(() => {
-    const storedCart = localStorage.getItem("cart");
-    return storedCart ? JSON.parse(storedCart) : [];
-  });
-
-  useEffect(() => {
-    localStorage.setItem("cart", JSON.stringify(cart));
-  }, [cart]);
-
-  const sharedData = {
-    cart,
-    setCart,
-  };
+    
   return (
     <BrowserRouter>
-      <AppContext.Provider value={sharedData}>
+      <CartProvider>
         <Routes>
           <Route exact path="/" element={<Register />} />
           <Route path="/login" element={<Login />} />
           <Route path="/homePage" element={<Homepage />} />
-          <Route path="/DescPage" element={<DescPages/>} />
+          <Route path="/DescPage/:id" element={<DescPages />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
-      </AppContext.Provider>
+      </CartProvider>
     </BrowserRouter>
   );
 };

@@ -15,21 +15,15 @@ import {
   AddToCartButton,
 } from "../../styles/AboutUs";
 import { AppContext } from "../../ContextApi/AppContext";
+import { useNavigate } from "react-router-dom";
 
 const AboutUs = ({ aboutUs, featured }) => {
   const baseURL = "http://localhost:1337";
-  const { cart, setCart } = useContext(AppContext);
+ const { state, dispatch } = useContext(AppContext);
 
-  useEffect(() => {
-    const storedCart = localStorage.getItem("cart")
-    if (storedCart) {
-      setCart(JSON.parse(storedCart))
-    }
-  }, [setCart]);
-
-  useEffect(() => {
-    localStorage.setItem("cart", JSON.stringify(cart));
-  }, [cart]);
+   useEffect(() => {
+     localStorage.setItem("cart", JSON.stringify(state.cart));
+   }, [state.cart]);
 
   const addTocart = (id) => {
     const prodCart = document.querySelector(".show-cart");
@@ -42,18 +36,30 @@ const AboutUs = ({ aboutUs, featured }) => {
         "attributes"
       ]["url"];
 
-    const isProductExists = cart.find((prod) => prod.Name === Name);
+    const isProductExists = state.cart.find((prod) => prod.Name === Name);
 
     if (!isProductExists) {
-      setCart([...cart, { Name, Price, ProdImg, Quantity: 1 }]);
+      dispatch({
+        type: "ADD_PRODUCT_TO_CART",
+        payload: { Name, Price, ProdImg, Quantity: 1 },
+      });
     } else {
-      setCart(
-        cart.map((prod) =>
-          prod.Name === Name ? { ...prod, Quantity: prod.Quantity + 1 } : prod
-        )
-      );
+      dispatch({
+        type: "Increment_Quantity",
+        payload: { Name },
+      });
     }
   };
+
+  const navigate = useNavigate();
+
+  console.log(featured);
+  
+
+  const handleState = (id) => {
+    navigate(`/DescPage/${id}`);
+  };
+
   return (
     <AboutWrapper id="aboutus">
       <AboutUsBanner>
@@ -66,7 +72,12 @@ const AboutUs = ({ aboutUs, featured }) => {
       <AboutHeadline>{featured["Heading"]}</AboutHeadline>
       <AboutCatalog>
         {featured.products.data.map((Product, index) => (
-          <AboutCard key={index}>
+          <AboutCard
+            onClick={() => {
+              handleState(Product.id);
+            }}
+            key={index}
+          >
             <AboutImageWrapper>
               <AboutImage
                 src={`${baseURL}${Product["attributes"]["ProdImg"]["data"][0]["attributes"]["url"]}`}
@@ -75,7 +86,12 @@ const AboutUs = ({ aboutUs, featured }) => {
               <AboutImageDetails>
                 <AboutPrice>{Product.attributes.Price}</AboutPrice>
                 <AboutTitle>{Product.attributes.Name}</AboutTitle>
-                <AddToCartButton onClick={() => addTocart(index)}>
+                <AddToCartButton
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    addTocart(index);
+                  }}
+                >
                   {Product["attributes"].Button}
                 </AddToCartButton>
               </AboutImageDetails>
