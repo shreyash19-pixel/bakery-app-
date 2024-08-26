@@ -26,9 +26,6 @@ const AboutUs = ({ aboutUs, featured }) => {
    }, [state.cart]);
 
   const addTocart = (id) => {
-    const prodCart = document.querySelector(".show-cart");
-    prodCart.classList.add("openCart");
-
     const { Name, Price } = featured.products.data[id]["attributes"];
 
     const ProdImg =

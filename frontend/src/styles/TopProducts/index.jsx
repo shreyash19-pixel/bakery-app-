@@ -138,15 +138,10 @@ export const ProductBanner = styled.div`
   background-position: center;
   margin-block: 40px;
   position: relative;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  flex-direction: column;
-  gap: 40px;
 
   h1 {
     width: 309px;
-    color: #933c24;
+    color: #e9bd8c;
     font-size: 40px;
     font-family: "Sansita Swashed", system-ui;
     font-optical-sizing: auto;
@@ -163,6 +158,19 @@ export const ProductBanner = styled.div`
     font-size: 20px;
     z-index: 1;
   }
+`;
+
+export const BackgroundTopFilter = styled.div`
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5);
+  z-index: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  gap: 40px;
   `
 
   export const ProductButton = styled.button`

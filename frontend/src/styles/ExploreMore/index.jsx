@@ -12,7 +12,7 @@ export const ExploreWrapper = styled.div`
 
 `;
 
-export const ExportLink = styled.div`
+export const ExportLinkWrapper = styled.div`
   width: 100%;
   display: flex;
   align-items: center;
@@ -21,13 +21,17 @@ export const ExportLink = styled.div`
   border-bottom: 1px solid #c1baba9f;
   cursor: pointer;
   overflow-y: auto;
+`;
 
-  div {
-    color: #5d5d5d;
-    font-size: 20px;
-    font-family: "Poppins", sans-serif;
-    text-decoration: none;
-    font-weight: 500;
+export const ExportLink = styled.div`
+  color: ${(props) => (props.col ? "#e9bd8c" : "#5d5d5d")};
+  font-size: 20px;
+  font-family: "Poppins", sans-serif;
+  text-decoration: none;
+  font-weight: 500;
+
+  &:hover {
+    border-bottom: 1px solid #933c24;
   }
 `;
 

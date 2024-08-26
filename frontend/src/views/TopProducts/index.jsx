@@ -13,9 +13,11 @@ import {
   AddToCartButton,
   ProductBanner,
   ProductButton,
+  BackgroundTopFilter,
 } from "../../styles/TopProducts";
 import { AppContext } from "../../ContextApi/AppContext";
 import { useNavigate } from "react-router-dom";
+import { BackgroundFilter } from "../../styles/Hero";
 
 const TopProducts = ({ topProducts, firstOrder }) => {
   const baseURL = "http://localhost:1337";
@@ -25,8 +27,6 @@ const TopProducts = ({ topProducts, firstOrder }) => {
   }, [state.cart]);
 
   const addToCart = (id) => {
-    const prodCart = document.querySelector(".show-cart");
-    prodCart.classList.add("openCart");
 
     const { Name, Price } = topProducts[id]["attributes"];
     const ProdImg =
@@ -86,9 +86,11 @@ const TopProducts = ({ topProducts, firstOrder }) => {
         ))}
       </ProductCatalog>
       <ProductBanner>
-        <h1>{firstOrder.Heading}</h1>
-        <p>{firstOrder.Description}</p>
-        <ProductButton> {firstOrder.Button}</ProductButton>
+        <BackgroundTopFilter>
+          <h1>{firstOrder.Heading}</h1>
+          <p>{firstOrder.Description}</p>
+          <ProductButton> {firstOrder.Button}</ProductButton>
+        </BackgroundTopFilter>
       </ProductBanner>
     </ProductWrapper>
   );

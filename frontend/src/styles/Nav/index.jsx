@@ -12,7 +12,7 @@ export const NavWrapper = styled.div`
   padding: 5px 15px;
   z-index: 4;
   background-color: ${({ scrolled }) =>
-    scrolled ? "rgba(44, 45, 46, 0.329)" : ""};
+    scrolled ? "rgba(44, 45, 46, 0.441)" : ""};
 `;
 
 export const NavLogo = styled.div`
@@ -35,20 +35,19 @@ export const Navlink = styled.div`
   @media (max-width: 768px) {
     display: none;
   }
+`;
 
-  a {
+export const Navlinks = styled.a`
+  
     font-size: 25px;
     font-family: "Poppins", sans-serif;
     text-decoration: none;
     font-weight: ${({ scrolled }) => (scrolled ? 800 : 500)};
-    color: white;
+    color: ${(props) => (props.col ? "#e9bd8c" : "#fff")};
     transition: background-color 0.3s ease-in-out;
 
-    :active
-    {
+    :active {
       color: #e9bd8c;
-    }
-      
     }
 `;
 
@@ -56,6 +55,10 @@ export const ProfileIconWrap = styled.div`
   display: flex;
   gap: 16px;
 `;
+
+export const Cart = styled.div`
+  position: relative;
+`
 
 export const ProfileIcon = styled(FontAwesomeIcon)`
   color: #e9bd8c;
@@ -76,6 +79,20 @@ export const ProfileIcon = styled(FontAwesomeIcon)`
       display: flex;
     }
   }
+`;
+
+export const CartBadge = styled.span`
+  position: absolute;
+  top: -5px;
+  right: -5px;
+  background-color: red;
+  color: white;
+  border-radius: 50%; 
+  padding: 2px 6px;
+  font-size: 0.75rem;
+  font-weight: bold;
+  display: ${({ count }) =>
+    count > 0 ? "block" : "none"}; /* Hide when count is 0 */
 `;
 
 export const left = keyframes`

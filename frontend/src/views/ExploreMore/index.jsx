@@ -11,6 +11,7 @@ import {
   ProductImageWrapper,
   ProductImageDetails,
   AddToCartButton,
+  ExportLinkWrapper,
 } from "../../styles/ExploreMore";
 
 import Loader from "../../components/Loader";
@@ -20,9 +21,11 @@ import { useNavigate } from "react-router-dom";
 const ExploreMore = ({ explore }) => {
   const [activeCat, setActiveCat] = useState([explore["Categories"][0]]);
   const [loading, setLoading] = useState(false);
+  const [isactive, setIsactive] = useState(0);
   const { state, dispatch } = useContext(AppContext);
 
-  const setCategory = (cat) => {
+  const setCategory = (cat, index) => {
+    setIsactive(index);
     setLoading(true);
     setTimeout(() => {
       setActiveCat([explore["Categories"][cat]]);
@@ -37,8 +40,6 @@ const ExploreMore = ({ explore }) => {
   const baseURL = "http://localhost:1337";
 
   const addToCart = (i, j) => {
-    const prodCart = document.querySelector(".show-cart");
-    prodCart.classList.add("openCart");
     const { Name, Price } =
       explore["Categories"][i]["products"]["data"][j]["attributes"];
 
@@ -65,33 +66,37 @@ const ExploreMore = ({ explore }) => {
   const navigate = useNavigate();
 
   const handleState = (id) => {
-     console.log(`Navigating to product with id: ${id}`);
+    console.log(`Navigating to product with id: ${id}`);
     navigate(`/DescPage/${id}`);
   };
 
   return (
     <ExploreWrapper>
       <ProductHeadline>Explore More</ProductHeadline>
-      <ExportLink>
+      <ExportLinkWrapper>
         {explore["Categories"].map((categories, index) => (
-          <div key={categories.CategoryType} onClick={() => setCategory(index)}>
+          <ExportLink
+            key={categories.CategoryType}
+            onClick={() => setCategory(index, index)}
+            col={isactive === index ? "active" : ""}
+          >
             {categories.CategoryType}
-          </div>
+          </ExportLink>
         ))}
-      </ExportLink>
+      </ExportLinkWrapper>
       {loading ? (
         <Loader />
       ) : (
         <ProductCatalog>
           {activeCat.map((product) => (
-            <ProductCard
-              onClick={() => {
-                handleState(product.id);
-              }}
-              key={product.id}
-            >
+            <ProductCard key={product.id}>
               {product.products.data.map((prod, j) => (
-                <ProductImageWrapper key={prod.id}>
+                <ProductImageWrapper
+                  key={prod.id}
+                  onClick={() => {
+                    handleState(prod.id);
+                  }}
+                >
                   <ProductImage
                     src={`${baseURL}${prod.attributes.ProdImg.data[0].attributes.url}`}
                     alt={prod.attributes.Name}
