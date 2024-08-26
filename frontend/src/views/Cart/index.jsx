@@ -1,6 +1,5 @@
 import React, { useContext } from "react";
 import {
-  CartContainer,
   CartDetails,
   CartDetailsLeft,
   CartDetailsRight,
@@ -13,6 +12,8 @@ import {
   CartScrollWrap,
   EmptyCartWrap,
   CartIcon,
+  TotalPrice,
+  CheckoutButton,
 } from "../../styles/Cart";
 import { faTimes, faCartShopping, faTrash } from "@fortawesome/free-solid-svg-icons";
 import { AppContext } from "../../ContextApi/AppContext";
@@ -42,6 +43,12 @@ const Cart = () => {
     return prodPrice;
   };
 
+  const calculateTotal = () => {
+    return state.cart.reduce(
+      (total, prods) => total + prods.Quantity * formatPrice(prods.Price),
+      0
+    );
+  };
   const closeCart = () => {
     const prodCart = document.querySelector(".show-cart");
     prodCart.classList.remove("openCart");
@@ -50,6 +57,8 @@ const Cart = () => {
   const removeProd = (Name) => {
     dispatch({ type: "DEL_PROD", payload: { Name } });
   };
+
+  
 
   return (
     <div className="show-cart">
@@ -75,20 +84,22 @@ const Cart = () => {
                 <CartPrice>{`$${
                   prods.Quantity * formatPrice(prods.Price)
                 }`}</CartPrice>
-                  <CrossIcon
-                    onClick={() => removeProd(prods.Name)}
-                    icon={faTrash}
-                  />
+                <CrossIcon
+                  onClick={() => removeProd(prods.Name)}
+                  icon={faTrash}
+                />
               </CartDetailsRight>
             </CartDetails>
           ))
         ) : (
           <EmptyCartWrap>
             <CartIcon icon={faCartShopping} />
-            <span>No Product in the Cart</span>
+            <span>No products in cart</span>
           </EmptyCartWrap>
         )}
       </CartScrollWrap>
+      <TotalPrice>Total : ${calculateTotal().toFixed(2)}</TotalPrice>
+      <CheckoutButton>Checkout</CheckoutButton>
     </div>
   );
 };

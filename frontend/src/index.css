@@ -33,7 +33,12 @@ code {
   z-index: 4;
   transform: translateX(100%);
   transition: transform .3s ease-in-out;
+
+  @media (max-width: 768px) {
+    max-width: unset;
 }
+}
+
 
 .show-cart.openCart{
   transform: translateX(0);
